@@ -4,23 +4,38 @@ import { ApiError } from "../utils/ApiError.js";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
 import { APiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
+import { executeQuery } from "../../src/db/Query.js";
 const options = {
   httpOnly: true,
   secure: true,
 };
-const generateAccessAndRefreshTokens = async (userId) => {
-  try {
-    const user = await User.findById(userId);
-    const accessToken = await user.generateAccessToken();
-    const refreshToken = await user.generateRefreshToken();
-    user.refreshToken = refreshToken;
-    await user.save({ validateBeforeSave: false });
-    // console.log("accessToken", accessToken);
-    // console.log("refreshToken", refreshToken);
-    return { accessToken, refreshToken };
-  } catch (error) {
-    throw new ApiError(500, "Failed to generate access or refresh tokens");
-  }
+// const generateAccessAndRefreshTokens = async (userId) => {
+//   try {
+//     const user = await User.findById(userId);
+//     const accessToken = await user.generateAccessToken();
+//     const refreshToken = await user.generateRefreshToken();
+//     user.refreshToken = refreshToken;
+//     await user.save({ validateBeforeSave: false });
+//     // console.log("accessToken", accessToken);
+//     // console.log("refreshToken", refreshToken);
+//     return { accessToken, refreshToken };
+//   } catch (error) {
+//     throw new ApiError(500, "Failed to generate access or refresh tokens");
+//   }
+// };
+
+export const creatEntry = async () => {
+  const q = `SELECT COUNT(*)
+FROM users
+WHERE username = ?
+   OR email = ?
+`;
+
+  const params = ["jhondoe11", "jhon@gmail.com"];
+  const s = await executeQuery(q, params);
+  console.log();
+
+  return s[0]['COUNT(*)'];
 };
 
 // const registerUser = asyncHandler(async (req, res) => {
