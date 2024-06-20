@@ -11,15 +11,8 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 //routes import
-import userRouter from "./routes/user.routes.js";
-import likeRouter from "./routes/like.routes.js";
-import videoRouter from "./routes/video.routes.js";
-import commentRouter from "./routes/comment.routes.js";
-import postRouter from "./routes/post.routes.js";
+// import userRouter from "./routes/user.routes.js";
 //routes declaration
-app.use("/api/v1/users", userRouter);
-// app.use("/api/v1/post", likeRouter);
-app.use("/api/v1/videos", videoRouter);
-app.use("/api/v1/posts/comments", commentRouter);
-app.use("/api/v1/posts", postRouter);
+// app.use("/api/v1/users", userRouter);
+
 export { app };
