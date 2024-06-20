@@ -1,4 +1,4 @@
-// import { Router } from "express";
+import { Router } from "express";
 // import {
 //   changeCurrentUserPassword,
 //   getCurrentUser,
@@ -14,7 +14,11 @@
 // } from "../controllers/user.controller.js";
 // import { upload } from "../middlewares/multer.middleware.js";
 // import { verifyJwt } from "../middlewares/auth.middleware.js";
-// const router = Router();
+const router = Router();
+import { creatEntry } from "../controllers/user.controller.js";
+router.route("/data").get(async(req, res) => {
+  return res.json(await creatEntry()).status(200);
+});
 // //get routes
 // router
 //   .route("/register")
@@ -53,4 +57,4 @@
 //   .patch(verifyJwt, upload.single("coverImage"), updateUserCoverImage);
 // router.route("/c/:username").get(verifyJwt, getUserChannelProfile);
 // router.route("/history").get(verifyJwt, getWatchHistory);
-// export default router;
+export default router;
