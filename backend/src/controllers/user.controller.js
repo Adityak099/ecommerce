@@ -1,6 +1,5 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
-// import { User } from "../models/user.model.js";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
 import { APiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
@@ -134,10 +133,8 @@ export const registerUser = asyncHandler(async (req, res) => {
 });
 
 export const loginUser = asyncHandler(async (req, res) => {
-  const { username, email, password } = req.body;
-
   try {
-    // Validate input
+    const { username, email, password } = req.body;
     if (!(username || email)) {
       return res.status(400).json({
         status: 400,
@@ -146,69 +143,85 @@ export const loginUser = asyncHandler(async (req, res) => {
       });
     }
 
-    // Check if user exists
     const userQuery = `
-      SELECT username, password, email, refresh_token
-      FROM users
-      WHERE username = ? 
-    `;
+        SELECT user_id, username, password, email
+        FROM users
+        WHERE username = ? 
+      `;
     const userParams = [username];
     const [userData] = await executeQuery(userQuery, userParams);
-
     if (!userData) {
       return res.status(404).json({
         status: 404,
         message: "User not found",
+        data: { username },
+      });
+    }
+    if (!password) {
+      return res.status(400).json({
+        status: 400,
+        message: "Password is required",
+        data: null,
+      });
+    }
+    const isPasswordValid = await bcrypt.compare(password, userData.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        status: 401,
+        message: "Invalid password",
         data: null,
       });
     }
 
-    // User found, return user data
-    return res.status(200).json({
-      status: 200,
-      message: "User found",
-      data: userData,
-    });
+    const access_token = generateAccessToken(userData.user_id);
+    const refresh_token = generateRefreshToken(userData.user_id);
+    const q = `UPDATE users SET refresh_token = ? , updated_at = ? WHERE user_id = ?;`;
+    const p = [refresh_token, new Date(), userData.user_id];
+    await executeQuery(q, p);
+    return res
+      .status(200)
+      .cookie("refresh_token", refresh_token, options)
+      .cookie("access_token", access_token, options)
+      .json(
+        new APiResponse(200, "User Logged In Successfully", {
+          access_token,
+          refresh_token,
+        })
+      );
   } catch (error) {
-    return res.status(500).json({
-      status: 500,
-      message: "Internal Server Error",
-      error: error,
-    });
+    return res
+      .status(500)
+      .json(new APiResponse(500, "Internal Server Error", error));
   }
 });
 
 export const logoutUser = asyncHandler(async (req, res) => {
   try {
-    // Get the user's refresh token from the request
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.cookies.refresh_token;
 
-    // If no refresh token is provided, return an error
     if (!refreshToken) {
-      return res.status(401).json({
-        status: 401,
-        message: "Unauthorized",
-        data: null,
-      });
+      return res
+        .status(400)
+        .json(new APiResponse(401, "Invalid Request", null));
     }
 
     // Delete the user's refresh token from the database
-    const deleteQuery = `
-      UPDATE users
-      SET refresh_token = NULL
-      WHERE refresh_token =?
-    `;
-    const deleteParams = [refreshToken];
-    await executeQuery(deleteQuery, deleteParams);
+    // const deleteQuery = `
+    //   UPDATE users
+    //   SET refresh_token = NULL
+    //   WHERE refresh_token =?
+    // `;
+    // const deleteParams = [refreshToken];
+    // await executeQuery(deleteQuery, deleteParams);
 
-    // Clear the refresh token cookie
-    res.clearCookie("refreshToken");
+    // // Clear the refresh token cookie
+    // res.clearCookie("refreshToken");
 
     // Return a success response
     return res.status(200).json({
       status: 200,
       message: "User logged out successfully",
-      data: null,
+      data: refreshToken,
     });
   } catch (error) {
     return res.status(500).json({
