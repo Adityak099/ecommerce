@@ -8,14 +8,14 @@ const config = {
 };
 let connection;
 
-export  async function connectDB() {
+export async function connectDB() {
   if (!connection) {
     try {
       connection = await mysql.createConnection(config);
       console.log("Connected to database ...");
     } catch (error) {
       console.error("Error connecting to database ...", error);
-      throw error; // rethrow the error after logging it
+      throw error;
     }
   }
   return connection;
@@ -33,4 +33,3 @@ export async function disconnectDB() {
     }
   }
 }
-
