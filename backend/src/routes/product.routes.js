@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js";
 import {
   createProduct,
   deleteProduct,
@@ -12,18 +13,26 @@ const router = Router();
 router.use(verifyJwt);
 
 // Create a new product
-router.route("/new-product").post(createProduct);
+router.route("/new-product").post(
+  upload.fields([
+    {
+      name: "image",
+      maxCount: 1,
+    },
+  ]),
+  createProduct
+);
 
 // Get all products
 // router.route("/").get(getProducts);
 
 // Get a single product
-router.route("/:id").get(getProduct);
+router.route("/get-product").get(getProduct);
 
 // Update a product
-router.route("/:id").put(updateProduct);
+router.route("/update-product").put(updateProduct);
 
 // Delete a product
-router.route("/:id").delete(deleteProduct);
+router.route("/delete-product").delete(deleteProduct);
 
 export default router;
