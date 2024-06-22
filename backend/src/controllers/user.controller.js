@@ -5,6 +5,7 @@ import { APiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { executeQuery } from "../../src/db/Query.js";
+import { getUserInfo, insertUser } from "../models/queries.model.js";
 const options = {
   httpOnly: true,
   secure: true,
@@ -22,18 +23,19 @@ const generateRefreshToken = (id) => {
 };
 export const registerUser = asyncHandler(async (req, res) => {
   try {
-    const { first_name, last_name, email, username, password } = req.body;
+    const { first_name, last_name, email, username, phone, password } =
+      req.body;
 
     if (!email) {
       return res
         .status(400)
-        .json(new APiResponse(400, "Email is required", null));
+        .json(new APiResponse(400, { email: "Email is required" }, null));
     } else if (email.indexOf("@") === -1) {
     }
     if (!username) {
       return res
         .status(400)
-        .json(new APiResponse(400, "Username is required", null));
+        .json(new APiResponse(400, { username: "Username is required" }, null));
     }
     const q = `SELECT user_id FROM users WHERE username = ?
        OR email = ?;
@@ -55,23 +57,36 @@ export const registerUser = asyncHandler(async (req, res) => {
     if (!first_name) {
       return res
         .status(400)
-        .json(new APiResponse(400, "First name is required", null));
+        .json(
+          new APiResponse(400, { first_name: "First name is required" }, null)
+        );
     }
     if (!last_name) {
       return res
         .status(400)
-        .json(new APiResponse(400, "Last name is required", null));
+        .json(
+          new APiResponse(400, { last_name: "Last name is required" }, null)
+        );
     }
     if (!password) {
       return res
         .status(400)
-        .json(new APiResponse(400, "Password is required", null));
+        .json(new APiResponse(400, { password: "Password is required" }, null));
     }
 
     if (!req.files?.avatar) {
       return res
         .status(400)
-        .json(new APiResponse(400, "Avatar file is required", null));
+        .json(
+          new APiResponse(400, { avatar: "Avatar file is required" }, null)
+        );
+    }
+    if (!phone) {
+      return res
+        .status(400)
+        .json(
+          new APiResponse(400, { phone: "Phone number is required" }, null)
+        );
     }
     let coverImageLocalPath;
     const avatarLocalPath = req.files?.avatar[0]?.path;
@@ -84,30 +99,27 @@ export const registerUser = asyncHandler(async (req, res) => {
     } else {
       return res
         .status(400)
-        .json(new APiResponse(400, "Cover Image file is required", null));
+        .json(
+          new APiResponse(
+            400,
+            { coverImage: "Cover Image file is required" },
+            null
+          )
+        );
     }
-
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const avatar = await uploadToCloudinary(avatarLocalPath);
     const coverImage = await uploadToCloudinary(coverImageLocalPath);
 
-    const insertQuery = `
-    INSERT INTO users (user_id, first_name, last_name, username, email, password, refresh_token, avatar, cover_image, created_at, updated_at) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-  `;
-    const userQuery = `SELECT user_id, first_name, last_name, username, email, avatar, cover_image, created_at, updated_at ,refresh_token
-    FROM users 
-    WHERE user_id = ?;`;
-
-    const insertedUser = await executeQuery(insertQuery, [
+    const insertedUser = await executeQuery(insertUser, [
       null,
       first_name,
       last_name,
       username,
       email,
+      phone,
       hashedPassword,
-      "",
+      null,
       avatar.url,
       coverImage.url,
       new Date(),
@@ -116,7 +128,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     const user_id = insertedUser.insertId;
     req.id = user_id;
 
-    const userDetails = await executeQuery(userQuery, [user_id]);
+    const userDetails = await executeQuery(getUserInfo, [user_id]);
     return res
       .status(201)
       .json(
@@ -142,7 +154,6 @@ export const loginUser = asyncHandler(async (req, res) => {
         data: null,
       });
     }
-
     const userQuery = `
         SELECT user_id, username, password, email
         FROM users
@@ -195,34 +206,21 @@ export const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
-export const logoutUser = asyncHandler(async (req, res) => {
+export const logOutUser = asyncHandler(async (req, res) => {
   try {
-    const refreshToken = req.cookies.refresh_token;
+    const updateRefreshTokenQuery = `
+      UPDATE users
+      SET refresh_token = NULL
+      WHERE user_id = ?
+    `;
+    const updateRefreshToken = [req.id];
+    await executeQuery(updateRefreshTokenQuery, updateRefreshToken);
 
-    if (!refreshToken) {
-      return res
-        .status(400)
-        .json(new APiResponse(401, "Invalid Request", null));
-    }
-
-    // Delete the user's refresh token from the database
-    // const deleteQuery = `
-    //   UPDATE users
-    //   SET refresh_token = NULL
-    //   WHERE refresh_token =?
-    // `;
-    // const deleteParams = [refreshToken];
-    // await executeQuery(deleteQuery, deleteParams);
-
-    // // Clear the refresh token cookie
-    // res.clearCookie("refreshToken");
-
-    // Return a success response
-    return res.status(200).json({
-      status: 200,
-      message: "User logged out successfully",
-      data: refreshToken,
-    });
+    return res
+      .status(200)
+      .clearCookie("refresh_token")
+      .clearCookie("access_token")
+      .json(new APiResponse(200, "User Logged Out Successfully"));
   } catch (error) {
     return res.status(500).json({
       status: 500,
@@ -233,17 +231,64 @@ export const logoutUser = asyncHandler(async (req, res) => {
 });
 
 export const getUser = asyncHandler(async (req, res) => {
+  try {
+    const params = [req.body.user_id];
+    const [user] = await executeQuery(getUserInfo, params);
+    if (!user) {
+      return res.status(404).json(new APiResponse(404, "User not found", null));
+    }
+    return res
+      .status(200)
+      .json(new APiResponse(200, "Fetched Users successfully", user));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(new ApiError(500, null, "Something went wrong", error));
+  }
+});
+
+export const updateUserDetails = asyncHandler(async (req, res) => {
   // try {
-  const query = `SELECT * FROM users WHERE user_id = ?;`;
-  // const query = `SELECT * FROM  users;`;
-  const params = [req.body.user_id];
-  const user = await executeQuery(query, params);
+  const { first_name, last_name, email, phone } = req.body;
+  let response = {};
+  if (first_name) {
+    const query = `UPDATE users SET first_name = ? WHERE user_id = ?;`;
+    const params = [first_name, req.id];
+    await executeQuery(query, params);
+    response.first_name = "First Name updated successfully";
+  }
+  if (last_name) {
+    const query = `UPDATE users SET last_name = ? WHERE user_id = ?;`;
+    const params = [last_name, req.id];
+    await executeQuery(query, params);
+    response.last_name = "Last Name updated successfully";
+  }
+  if (email) {
+    const query = `UPDATE users SET email = ? WHERE user_id = ?;`;
+    const params = [email, req.id];
+    await executeQuery(query, params);
+    response.email = "Email updated successfully";
+  }
+  if (phone) {
+    const query = `UPDATE users SET phone = ? WHERE user_id = ?;`;
+    const params = [phone, req.id];
+    await executeQuery(query, params);
+    response.phone = "Phone updated successfully";
+  }
+
+  const query = `SELECT first_name,last_name,email FROM users WHERE user_id = ?;`;
+  const [user] = await executeQuery(query, [req.id]);
   return res
     .status(200)
-    .json(new APiResponse(200, "Fetched Users successfully", user));
+    .json(
+      new APiResponse(200, "User updated successfully", {
+        ...user,
+        updated_fields: response,
+      })
+    );
   // } catch (error) {
   return res
     .status(500)
-    .json(new ApiError(500, null, "Something went wrong", error));
+    .json(new APiResponse(500, "Internal Server Error", error));
   // }
 });
