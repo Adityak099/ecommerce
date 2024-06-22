@@ -1,4 +1,4 @@
--- Active: 1718731773386@@sql12.freesqldatabase.com@3306@sql12714451
+
 INSERT INTO users
 VALUES(
         '',
