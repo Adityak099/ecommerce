@@ -12,9 +12,9 @@ const router = Router();
 router.use(verifyJwt);
 
 router.route("/create-order").post(createOrder);
-router.route("/delete-order").delete(deleteOrder);
 router.route("/get-order").get(getOrder);
 router.route("/get-orders").get(getOrders);
-router.route("/update-order").put(updateOrder);
+router.route("/delete-order").delete(deleteOrder);
+router.route("/update-order").patch(updateOrder);
 
 export default router;
