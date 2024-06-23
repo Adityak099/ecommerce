@@ -106,7 +106,7 @@ CREATE TABLE category(
 );
 CREATE TABLE sub_category(
     sub_category_id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE,
-    category_name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
     description TEXT,
     parent_id BIGINT,
     FOREIGN KEY (parent_id) REFERENCES category(category_id)
