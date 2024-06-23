@@ -259,25 +259,25 @@ export const updateUserDetails = asyncHandler(async (req, res) => {
   let response = {};
   if (first_name) {
     const query = `UPDATE users SET first_name = ? , updated_at=? WHERE user_id = ?;`;
-    const params = [first_name,new Date(), req.id];
+    const params = [first_name, new Date(), req.id];
     await executeQuery(query, params);
     response.first_name = "First Name updated successfully";
   }
   if (last_name) {
     const query = `UPDATE users SET last_name = ? , updated_at=? WHERE user_id = ?;`;
-    const params = [last_name,new Date(),req.id];
-    await executeQuery(query,new Date(), params);
+    const params = [last_name, new Date(), req.id];
+    await executeQuery(query, new Date(), params);
     response.last_name = "Last Name updated successfully";
   }
   if (email) {
     const query = `UPDATE users SET email = ? , updated_at=? WHERE user_id = ?;`;
-    const params = [email,new Date(), req.id];
+    const params = [email, new Date(), req.id];
     await executeQuery(query, params);
     response.email = "Email updated successfully";
   }
   if (phone) {
     const query = `UPDATE users SET phone = ? , updated_at=? WHERE user_id = ?;`;
-    const params = [phone,new Date(), req.id];
+    const params = [phone, new Date(), req.id];
     await executeQuery(query, params);
     response.phone = "Phone updated successfully";
   }
