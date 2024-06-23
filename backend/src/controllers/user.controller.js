@@ -191,8 +191,14 @@ export const loginUser = asyncHandler(async (req, res) => {
     await executeQuery(q, p);
     return res
       .status(200)
-      .cookie("refresh_token", refresh_token, options)
-      .cookie("access_token", access_token, options)
+      .cookie("refresh_token", refresh_token, {
+        ...options,
+        maxAge: 14 * 24 * 60 * 60 * 1000,
+      })
+      .cookie("access_token", access_token, {
+        ...options,
+        maxAge: 24 * 60 * 60 * 1000,
+      })
       .json(
         new APiResponse(200, "User Logged In Successfully", {
           access_token,
@@ -278,14 +284,12 @@ export const updateUserDetails = asyncHandler(async (req, res) => {
 
   const query = `SELECT first_name,last_name,email FROM users WHERE user_id = ?;`;
   const [user] = await executeQuery(query, [req.id]);
-  return res
-    .status(200)
-    .json(
-      new APiResponse(200, "User updated successfully", {
-        ...user,
-        updated_fields: response,
-      })
-    );
+  return res.status(200).json(
+    new APiResponse(200, "User updated successfully", {
+      ...user,
+      updated_fields: response,
+    })
+  );
   // } catch (error) {
   return res
     .status(500)
