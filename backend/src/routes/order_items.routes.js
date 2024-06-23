@@ -1,51 +1,32 @@
 import { Router } from "express";
-import * as order_itemsController from "../controllers/order_items.controller,s";
-import { verifyJwt } from "../middlewares/auth.middleware";
+import {
+  createOrderItem,
+  getAllOrderItems,
+  getOrderItemById,
+  updateOrderItem,
+  deleteOrderItem,
+} from "../controllers/orderItem.controller.js";
+
+import { verifyJwt } from "../middlewares/auth.middleware.js";
 
 const router = Router();
+router.use(verifyJwt);
 
 //Create a new order item
-router.post("/new-order", order_itemsController.createOrderItem);
+router.post("/new-order-item", createOrderItem);
 
-//Get all order items
-router.get("/", order_itemsController.getAllOrderItems);
-
-//Get order item by ID
-router.get("/:id", order_itemsController.getOrderItemById);
 
 //Update a order item
-router.put("/:id", order_itemsController.updateOrderItem);
+router.patch("/update-order-item", updateOrderItem);
 
 //Delete a order item
-router.delete("/:id", order_itemsController.deleteOrderItem);
+router.delete("/delete-order-item", deleteOrderItem);
 
-export default router;  
+//Get all order items
+router.get("/get-order-items", getAllOrderItems);
 
-// const router = Router();
+//Get order item by ID
+router.get("/get-order-item", getOrderItemById);
 
-// // GET all order_items
-// router.get("/", (req, res) => {
-//   // Your code here
-// });
+export default router;
 
-// // GET a specific order_item by ID
-// router.get("/:id", (req, res) => {
-//   // Your code here
-// });
-
-// // POST a new order_item
-// router.post("/", (req, res) => {
-//   // Your code here
-// });
-
-// // PUT/update a specific order_item by ID
-// router.put("/:id", (req, res) => {
-//   // Your code here
-// });
-
-// // DELETE a specific order_item by ID
-// router.delete("/:id", (req, res) => {
-//   // Your code here
-// });
-
-// module.exports = router;
