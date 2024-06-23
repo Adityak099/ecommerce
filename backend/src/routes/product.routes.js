@@ -3,16 +3,17 @@ import { verifyJwt } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import {
   createProduct,
+  getProductId,
+  getProductsByCategoryId,
+  getAllProducts,
   deleteProduct,
-  getProduct,
-  //   getProducts,
   updateProduct,
 } from "../controllers/product.controller.js";
 
 const router = Router();
 router.use(verifyJwt);
 
-// Create a new product
+// Create a new product✅
 router.route("/new-product").post(
   upload.fields([
     {
@@ -23,14 +24,25 @@ router.route("/new-product").post(
   createProduct
 );
 
-// Get all products
-// router.route("/").get(getProducts);
+// Get a single product by id✅
+router.route("/get-product-id").get(getProductId);
 
-// Get a single product
-router.route("/get-product").get(getProduct);
+//Get product by category Id✅
+router.route("/get-product-by-category-id").get(getProductsByCategoryId);
 
-// Update a product
-router.route("/update-product").put(updateProduct);
+// Get all products✅
+router.route("/get-all-product").get(getAllProducts);
+
+// Update a product✅
+router.route("/update-product").patch(
+  upload.fields([
+    {
+      name: "image",
+      maxCount: 1,
+    },
+  ]),
+  updateProduct
+);
 
 // Delete a product
 router.route("/delete-product").delete(deleteProduct);
