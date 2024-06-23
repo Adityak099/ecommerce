@@ -258,31 +258,31 @@ export const updateUserDetails = asyncHandler(async (req, res) => {
   const { first_name, last_name, email, phone } = req.body;
   let response = {};
   if (first_name) {
-    const query = `UPDATE users SET first_name = ? WHERE user_id = ?;`;
-    const params = [first_name, req.id];
+    const query = `UPDATE users SET first_name = ? , updated_at=? WHERE user_id = ?;`;
+    const params = [first_name,new Date(), req.id];
     await executeQuery(query, params);
     response.first_name = "First Name updated successfully";
   }
   if (last_name) {
-    const query = `UPDATE users SET last_name = ? WHERE user_id = ?;`;
-    const params = [last_name, req.id];
-    await executeQuery(query, params);
+    const query = `UPDATE users SET last_name = ? , updated_at=? WHERE user_id = ?;`;
+    const params = [last_name,new Date(),req.id];
+    await executeQuery(query,new Date(), params);
     response.last_name = "Last Name updated successfully";
   }
   if (email) {
-    const query = `UPDATE users SET email = ? WHERE user_id = ?;`;
-    const params = [email, req.id];
+    const query = `UPDATE users SET email = ? , updated_at=? WHERE user_id = ?;`;
+    const params = [email,new Date(), req.id];
     await executeQuery(query, params);
     response.email = "Email updated successfully";
   }
   if (phone) {
-    const query = `UPDATE users SET phone = ? WHERE user_id = ?;`;
-    const params = [phone, req.id];
+    const query = `UPDATE users SET phone = ? , updated_at=? WHERE user_id = ?;`;
+    const params = [phone,new Date(), req.id];
     await executeQuery(query, params);
     response.phone = "Phone updated successfully";
   }
 
-  const query = `SELECT first_name,last_name,email FROM users WHERE user_id = ?;`;
+  const query = `SELECT first_name,last_name,email,avatar created_at,updated_at FROM users WHERE user_id = ?;`;
   const [user] = await executeQuery(query, [req.id]);
   return res.status(200).json(
     new APiResponse(200, "User updated successfully", {
