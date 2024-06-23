@@ -1,38 +1,52 @@
 USE dbecommerce;
 
 
+
 CREATE TABLE users(
-    user_id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE,
     first_name VARCHAR(255),
     last_name VARCHAR(255),
     username VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
+    phone VARCHAR(15),
     password VARCHAR(255) NOT NULL,
     refresh_token VARCHAR(255),
     avatar VARCHAR(255),
     cover_image VARCHAR(255),
-    created_at TIMESTAMP DEFAULT current_timestamp,
-    updated_at TIMESTAMP
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT current_timestamp
 );
+
+SELECT * FROM users;
 ALTER TABLE users
-MODIFY password VARCHAR(255) NOT NULL ;
+MODIFY phone_num VARCHAR(255) NOT NULL ;
+ALTER TABLE users
+MODIFY COLUMN user_id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT;
+ALTER TABLE users
+ADD (
+    phone_num varchar(15) NOT NULL 
+);
+
+ALTER TABLE users
+RENAME COLUMN phone_num TO phone;
 
 truncate table users ;
 
 CREATE TABLE product(
-    product_id int NOT NULL PRIMARY KEY,
-    product_name VARCHAR(255) NOT NULL ,
-    product_stock BIGINT default 0,
-    product_description TEXT,
-    product_price DECIMAL(10, 2) NOT NULL,
-    product_image VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP
+    product_id int NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE,
+    name VARCHAR(255) NOT NULL ,
+    category_id BIGINT NOT NULL,
+    stock BIGINT default 0,
+    description TEXT,
+    price DECIMAL(10, 2) NOT NULL,
+    image VARCHAR(255),
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE supplier(
-    supplier_id INT NOT NULL PRIMARY KEY UNIQUE,
-    user_id int NOT NULL ,
+    supplier_id INT NOT NULL PRIMARY KEY  AUTO_INCREMENT UNIQUE,
+    user_id BIGINT NOT NULL ,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
@@ -47,8 +61,8 @@ CREATE TABLE supplier(
 -- );
 
 CREATE TABLE address(
-    address_id int NOT NULL PRIMARY KEY UNIQUE, 
-    user_id int NOT NULL,
+    address_id int NOT NULL PRIMARY KEY  AUTO_INCREMENT UNIQUE, 
+    user_id BIGINT NOT NULL,
     address_line1 VARCHAR(255) NOT NULL,
     address_line2 VARCHAR(255),
     city VARCHAR(255) NOT NULL,
@@ -59,9 +73,22 @@ CREATE TABLE address(
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+
+
+CREATE TABLE order_item(
+    item_id int NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE,
+    product_id int NOT NULL,
+    quantity int NOT NULL DEFAULT 1,
+	status ENUM('PENDING', 'TRANSIT', 'DELIVERED', 'CANCELLED') NOT NULL DEFAULT "PENDING",
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES product(product_id)
+);
+
+
 CREATE TABLE orders(
-    order_id INT NOT NULL PRIMARY KEY,
-    user_id INT NOT NULL,
+    order_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE,
+    user_id BIGINT NOT NULL,
     item_id INT NOT NULL,
     payment_id INT DEFAULT NULL,
     total_amount DECIMAL(10, 2) NOT NULL,
@@ -72,24 +99,13 @@ CREATE TABLE orders(
     FOREIGN KEY (item_id) REFERENCES order_item(item_id)
 );
 
-CREATE TABLE order_item(
-    item_id int NOT NULL PRIMARY KEY UNIQUE,
-    product_id int NOT NULL,
-    quantity int NOT NULL DEFAULT 1,
-	status ENUM('PENDING', 'TRANSIT', 'DELIVERED', 'CANCELLED') NOT NULL DEFAULT "PENDING",
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES product(product_id)
-);
-
-
 CREATE TABLE category(
-    category_id bigint NOT NULL PRIMARY KEY UNIQUE,
+    category_id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE	,
     category_name VARCHAR(255) NOT NULL,
     description TEXT
 );
 CREATE TABLE sub_category(
-    sub_category_id bigint NOT NULL PRIMARY KEY,
+    sub_category_id bigint NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE,
     category_name VARCHAR(255) NOT NULL,
     description TEXT,
     parent_id BIGINT,
@@ -98,7 +114,7 @@ CREATE TABLE sub_category(
 );
 
 CREATE TABLE discounts (
-    discount_id INT PRIMARY KEY,
+    discount_id INT PRIMARY KEY AUTO_INCREMENT UNIQUE,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     percentage DECIMAL(5, 2) NOT NULL CHECK (
@@ -112,7 +128,7 @@ CREATE TABLE discounts (
 
 
 CREATE TABLE inventory(
-    inventory_id INT NOT NULL PRIMARY KEY,
+    inventory_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE,
     product_id INT NOT NULL,
     supplier_id int NOT NULL,
     address_id int NOT NULL,
@@ -124,9 +140,9 @@ CREATE TABLE inventory(
     
 );
 CREATE TABLE reviews(
-    review_id INT NOT NULL PRIMARY KEY UNIQUE,
+    review_id INT NOT NULL PRIMARY KEY UNIQUE AUTO_INCREMENT UNIQUE,
     product_id INT NOT NULL,
-    user_id INT NOT NULL,
+    user_id BIGINT NOT NULL,
     review TEXT NOT NULL,
     rating INT NOT NULL CHECK (
         rating >= 0
@@ -138,9 +154,9 @@ CREATE TABLE reviews(
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 CREATE TABLE payments(
-    payment_id BIGINT NOT NULL PRIMARY KEY UNIQUE,
+    payment_id BIGINT NOT NULL PRIMARY KEY UNIQUE AUTO_INCREMENT UNIQUE,
     order_id int NOT NULL,
-    user_id INT NOT NULL,
+    user_id BIGINT NOT NULL,
     payment_amount DECIMAL(10, 2) NOT NULL,
     payment_options ENUM(
         'debit card',
@@ -157,25 +173,28 @@ CREATE TABLE payments(
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 CREATE TABLE wishlist(
-    wishlist_id INT NOT NULL PRIMARY KEY,
-    user_id INT NOT NULL,
+    wishlist_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE,
+    user_id BIGINT NOT NULL,
     product_id INT NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (product_id) REFERENCES product(product_id)
 );
+DROP TABLE users;
+
+DROP TABLE order_item;
+
 DROP TABLE category;
-DROP TABLE orders;
+
 DROP TABLE shopping_cart;
 DROP TABLE address;
 DROP TABLE product;
-DROP TABLE users;
-DROP TABLE order_item;
+
 DROP TABLE discounts;
 DROP TABLE inventory;
 DROP TABLE reviews;
 DROP TABLE payments;
 DROP TABLE wishlist;
-
+DROP TABLE supplier;
 USE dbecommerce;
