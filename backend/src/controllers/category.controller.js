@@ -53,11 +53,15 @@ export const deleteCategory = asyncHandler(async (req, res) => {
     }
     const q = `DELETE FROM category WHERE category_id = ?;`;
     const result = await executeQuery(q, [category_id]);
-    if (!result.affectedRows === 1) {
-      return res
-        .status(500)
-        .json(new APiResponse(201, "Failed to delete Category", null));
-    }
+      if (result.affectedRows === 0) {
+    return res.status(404).json(new APiResponse(404, "Review does not exist"));
+  }
+
+  if (result.affectedRows !== 1) {
+    return res
+      .status(500)
+      .json(new APiResponse(500, "Failed to delete review"));
+  }
     return res
       .status(201)
       .json(new APiResponse(201, "Category deleted successfully", null));

@@ -11,3 +11,13 @@ REFRESH_TOKEN_EXPIRY=10d
 CLOUDINARY_CLOUD_NAME=cloudinary cloud name
 CLOUDINARY_API_KEY=cloudinary api key
 CLOUDINARY_API_KEY_SECRET=cloudinary api key secret
+
+
+
+
+Routes made by aditya:
+
+1. Inventory
+2. Product
+3. Order item
+4. Reviews

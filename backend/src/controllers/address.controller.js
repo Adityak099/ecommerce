@@ -84,10 +84,16 @@ export const deleteAddress = asyncHandler(async (req, res) => {
         .json(new APiResponse(400, "Address id is required"));
     }
     const result = await executeQuery(deleteAddressQuery, [address_id]);
+    if (result.affectedRows === 0) {
+      return res
+        .status(404)
+        .json(new APiResponse(404, "Review does not exist"));
+    }
+
     if (result.affectedRows !== 1) {
       return res
-        .status(400)
-        .json(new APiResponse(400, "Failed to delete address"));
+        .status(500)
+        .json(new APiResponse(500, "Failed to delete review"));
     }
     return res
       .status(200)

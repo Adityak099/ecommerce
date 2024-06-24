@@ -11,7 +11,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const newSubCategory = asyncHandler(async (req, res) => {
   try {
-    const { name, parent_id, description } = req.body ;
+    const { name, parent_id, description } = req.body;
     const missingFields = {};
     if (!name) {
       missingFields.name = "Sub category name is required";
@@ -66,10 +66,14 @@ export const deleteSubCategory = asyncHandler(async (req, res) => {
       .json(new APiResponse(400, "Sub category id is required"));
   }
   const result = await executeQuery(deleteSubCategoryQuery, [sub_category_id]);
+  if (result.affectedRows === 0) {
+    return res.status(404).json(new APiResponse(404, "Review does not exist"));
+  }
+
   if (result.affectedRows !== 1) {
     return res
-      .status(400)
-      .json(new APiResponse(400, "Failed to delete sub category"));
+      .status(500)
+      .json(new APiResponse(500, "Failed to delete review"));
   }
   return res
     .status(200)

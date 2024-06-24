@@ -245,11 +245,15 @@ export const deleteProduct = asyncHandler(async (req, res) => {
     const { product_id } = req.body;
     const delete_product = `DELETE FROM product WHERE product_id = ?`;
     const result = await executeQuery(delete_product, [product_id]);
-    if (result.affectedRows !== 1) {
-      return res
-        .status(500)
-        .json(new APiResponse(500, "Failed to delete product", null));
-    }
+    if (result.affectedRows === 0) {
+    return res.status(404).json(new APiResponse(404, "Review does not exist"));
+  }
+
+  if (result.affectedRows !== 1) {
+    return res
+      .status(500)
+      .json(new APiResponse(500, "Failed to delete review"));
+  }
 
     return res
       .status(200)

@@ -71,10 +71,16 @@ export const deleteOrder = asyncHandler(async (req, res) => {
     }
     const q = `DELETE FROM orders WHERE order_id=? AND user_id=?`;
     const result = await executeQuery(q, [order_id, req.id]);
-    if (!result.affectedRows === 1) {
+    if (result.affectedRows === 0) {
+      return res
+        .status(404)
+        .json(new APiResponse(404, "Review does not exist"));
+    }
+
+    if (result.affectedRows !== 1) {
       return res
         .status(500)
-        .json(new APiResponse(500, "Failed to delete Order"));
+        .json(new APiResponse(500, "Failed to delete review"));
     }
     return res
       .status(200)
