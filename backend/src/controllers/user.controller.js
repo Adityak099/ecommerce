@@ -259,25 +259,25 @@ export const updateUserDetails = asyncHandler(async (req, res) => {
   let response = {};
   if (first_name) {
     const query = `UPDATE users SET first_name = ? , updated_at=? WHERE user_id = ?;`;
-    const params = [first_name,new Date(), req.id];
+    const params = [first_name, new Date(), req.id];
     await executeQuery(query, params);
     response.first_name = "First Name updated successfully";
   }
   if (last_name) {
     const query = `UPDATE users SET last_name = ? , updated_at=? WHERE user_id = ?;`;
-    const params = [last_name,new Date(),req.id];
-    await executeQuery(query,new Date(), params);
+    const params = [last_name, new Date(), req.id];
+    await executeQuery(query, new Date(), params);
     response.last_name = "Last Name updated successfully";
   }
   if (email) {
     const query = `UPDATE users SET email = ? , updated_at=? WHERE user_id = ?;`;
-    const params = [email,new Date(), req.id];
+    const params = [email, new Date(), req.id];
     await executeQuery(query, params);
     response.email = "Email updated successfully";
   }
   if (phone) {
     const query = `UPDATE users SET phone = ? , updated_at=? WHERE user_id = ?;`;
-    const params = [phone,new Date(), req.id];
+    const params = [phone, new Date(), req.id];
     await executeQuery(query, params);
     response.phone = "Phone updated successfully";
   }
@@ -295,4 +295,27 @@ export const updateUserDetails = asyncHandler(async (req, res) => {
     .status(500)
     .json(new APiResponse(500, "Internal Server Error", error));
   // }
+});
+
+export const deleteUser = asyncHandler(async (req, res) => {
+  try {
+    const query = `DELETE FROM users WHERE user_id = ?;`;
+
+    const result = await executeQuery(query, req.id);
+    if (result.affectedRows === 0) {
+      return res.status(404).json(new APiResponse(404, "User not found"));
+    }
+    if (!result.affectedRows === 1) {
+      return res
+        .status(500)
+        .json(new APiResponse(500, "Failed to delete user"));
+    }
+    return res
+      .status(200)
+      .json(new APiResponse(200, "User deleted successfully"));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(new APiResponse(500, "Internal Server Error", error));
+  }
 });
