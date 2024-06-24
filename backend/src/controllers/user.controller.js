@@ -296,3 +296,26 @@ export const updateUserDetails = asyncHandler(async (req, res) => {
     .json(new APiResponse(500, "Internal Server Error", error));
   // }
 });
+
+export const deleteUser = asyncHandler(async (req, res) => {
+  try {
+    const query = `DELETE FROM users WHERE user_id = ?;`;
+
+    const result = await executeQuery(query, req.id);
+    if (result.affectedRows === 0) {
+      return res.status(404).json(new APiResponse(404, "User not found"));
+    }
+    if (!result.affectedRows === 1) {
+      return res
+        .status(500)
+        .json(new APiResponse(500, "Failed to delete user"));
+    }
+    return res
+      .status(200)
+      .json(new APiResponse(200, "User deleted successfully"));
+  } catch (error) {
+    return res
+      .status(500)
+      .json(new APiResponse(500, "Internal Server Error", error));
+  }
+});
