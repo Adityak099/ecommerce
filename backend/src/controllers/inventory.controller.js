@@ -159,11 +159,15 @@ export const deleteInventory = asyncHandler(async (req, res) => {
         .status(500)
         .json(new APiResponse(500, "Failed to delete inventory"));
     }
-    if (result.affectedRows === 0) {
-      return res
-        .status(404)
-        .json(new APiResponse(404, "Inventory id is already deleted"));
-    }
+     if (result.affectedRows === 0) {
+    return res.status(404).json(new APiResponse(404, "Review does not exist"));
+  }
+
+  if (result.affectedRows !== 1) {
+    return res
+      .status(500)
+      .json(new APiResponse(500, "Failed to delete review"));
+  }
     return res
       .status(200)
       .json(new APiResponse(200, "Inventory deleted successfully"));
