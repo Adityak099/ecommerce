@@ -20,7 +20,7 @@ import orderRouter from "./routes/orders.routes.js";
 import orderItemRouter from "./routes/order_items.routes.js";
 import inventoryRouter from "./routes/inventory.routes.js";
 import reviewRouter from "./routes/reviews.routes.js";
-
+import paymentRouter from "./routes/payment.routes.js";
 //routes declaration
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/product", productRouter);
@@ -31,5 +31,6 @@ app.use("/api/v1/order", orderRouter);
 app.use("/api/v1/order/items", orderItemRouter);
 app.use("/api/v1/inventory", inventoryRouter);
 app.use("/api/v1/review", reviewRouter);
+app.use("/api/v1/payment", paymentRouter);
 
 export { app };
