@@ -25,11 +25,6 @@ const SignIn = () => {
         withCredentials: true,
       },
     );
-    if (response.status === 200) {
-      window.location.href = "/";
-    } else {
-      alert("Invalid username or password");
-    }
   };
   return (
     <div className="mx-3 mt-16  rounded-sm border border-stroke bg-white shadow-default lg:container dark:border-strokedark dark:bg-boxdark lg:mx-auto lg:mt-10">
