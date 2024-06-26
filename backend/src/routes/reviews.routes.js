@@ -11,7 +11,6 @@ import {
 const router = Router();
 router.use(verifyJwt);
 
-// const rrouter = router();
 // Create a new review
 router.route("/new-review").post(createReview);
 
