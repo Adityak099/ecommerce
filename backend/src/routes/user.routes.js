@@ -20,6 +20,8 @@ router.route("/register").post(
 router.route("/user-info").get(verifyJwt, getUser);
 router.route("/login").post(loginUser);
 router.route("/logout").post(verifyJwt, logOutUser);
+router.route("/delete-user").post(verifyJwt, logOutUser);
+
 router.route("/update-user-details").post(verifyJwt, updateUserDetails);
 
 export default router;
