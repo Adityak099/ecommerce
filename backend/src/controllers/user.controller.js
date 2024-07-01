@@ -6,7 +6,6 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { executeQuery } from "../../src/db/Query.js";
 import { getUserInfo, insertUser } from "../models/queries.model.js";
-import MissingFields from "../utils/MissingFields.js";
 const options = {
   httpOnly: true,
   secure: true,
@@ -26,6 +25,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   try {
     const { first_name, last_name, email, username, phone, password } =
       req.body;
+
     if (!email) {
       return res
         .status(400)
@@ -54,6 +54,26 @@ export const registerUser = asyncHandler(async (req, res) => {
           )
         );
     }
+    if (!first_name) {
+      return res
+        .status(400)
+        .json(
+          new APiResponse(400, { first_name: "First name is required" }, null)
+        );
+    }
+    if (!last_name) {
+      return res
+        .status(400)
+        .json(
+          new APiResponse(400, { last_name: "Last name is required" }, null)
+        );
+    }
+    if (!password) {
+      return res
+        .status(400)
+        .json(new APiResponse(400, { password: "Password is required" }, null));
+    }
+
     if (!req.files?.avatar) {
       return res
         .status(400)
@@ -61,19 +81,11 @@ export const registerUser = asyncHandler(async (req, res) => {
           new APiResponse(400, { avatar: "Avatar file is required" }, null)
         );
     }
-    const emptyFields = MissingFields({
-      first_name,
-      last_name,
-      username,
-      email,
-      phone,
-      password,
-    });
-    if (Object.keys(emptyFields).length > 0) {
+    if (!phone) {
       return res
         .status(400)
         .json(
-          new APiResponse(400, "All fields are required", { missingItems })
+          new APiResponse(400, { phone: "Phone number is required" }, null)
         );
     }
     let coverImageLocalPath;
@@ -96,13 +108,6 @@ export const registerUser = asyncHandler(async (req, res) => {
         );
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    if (avatarLocalPath === coverImageLocalPath) {
-      return res
-        .status(400)
-        .json(
-          new APiResponse(400, "Avatar and Cover Image cannot be the same")
-        );
-    }
     const avatar = await uploadToCloudinary(avatarLocalPath);
     const coverImage = await uploadToCloudinary(coverImageLocalPath);
 
@@ -233,7 +238,8 @@ export const logOutUser = asyncHandler(async (req, res) => {
 
 export const getUser = asyncHandler(async (req, res) => {
   try {
-    const [user] = await executeQuery(getUserInfo, [req.id]);
+    const params = [req.body.user_id];
+    const [user] = await executeQuery(getUserInfo, params);
     if (!user) {
       return res.status(404).json(new APiResponse(404, "User not found", null));
     }

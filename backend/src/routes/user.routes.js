@@ -19,7 +19,7 @@ router.route("/register").post(
   ]),
   registerUser
 );
-router.route("/user-profile").get(verifyJwt, getUser);
+router.route("/user-info").get(verifyJwt, getUser);
 router.route("/login").post(loginUser);
 router.route("/logout").post(verifyJwt, logOutUser);
 router.route("/delete-user").post(verifyJwt, logOutUser);
