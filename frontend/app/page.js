@@ -1,9 +1,11 @@
-import DefaultLayout from "@/components/Common/DefaultLayout";
+import Navbar from "@/components/Common/Navbar/Navbar";
+import Sidebar from "@/components/sidebar/Sidebar";
 
 export default function Home() {
   return (
     <main>
-      <DefaultLayout />
+      {/* <Navbar /> */}
+      <Sidebar />
     </main>
   );
 }
