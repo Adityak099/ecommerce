@@ -6,7 +6,6 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { executeQuery } from "../../src/db/Query.js";
 import { getUserInfo, insertUser } from "../models/queries.model.js";
-import MissingFields from "../utils/MissingFields.js";
 const options = {
   httpOnly: true,
   secure: true,
@@ -23,120 +22,117 @@ const generateRefreshToken = (id) => {
   });
 };
 export const registerUser = asyncHandler(async (req, res) => {
-  try {
-    const { first_name, last_name, email, username, phone, password } =
-      req.body;
-    if (!email) {
-      return res
-        .status(400)
-        .json(new APiResponse(400, { email: "Email is required" }, null));
-    } else if (email.indexOf("@") === -1) {
-    }
-    if (!username) {
-      return res
-        .status(400)
-        .json(new APiResponse(400, { username: "Username is required" }, null));
-    }
-    const q = `SELECT user_id FROM users WHERE username = ?
+  // try {
+  const { first_name, last_name, email, username, phone, password } = req.body;
+  console.log(req.body);
+  if (!email) {
+    return res
+      .status(400)
+      .json(new APiResponse(400, { email: "Email is required" }, null));
+  } else if (email.indexOf("@") === -1) {
+  }
+  if (!username) {
+    return res
+      .status(400)
+      .json(new APiResponse(400, { username: "Username is required" }, null));
+  }
+  const q = `SELECT user_id FROM users WHERE username = ?
        OR email = ?;
     `;
 
-    const params = [username, email];
-    const s = await executeQuery(q, params);
-    if (s.length !== 0) {
-      return res
-        .status(409)
-        .json(
-          new APiResponse(
-            409,
-            `User with username ${username} or email ${email} already exists`,
-            null
-          )
-        );
-    }
-    if (!req.files?.avatar) {
-      return res
-        .status(400)
-        .json(
-          new APiResponse(400, { avatar: "Avatar file is required" }, null)
-        );
-    }
-    const emptyFields = MissingFields({
-      first_name,
-      last_name,
-      username,
-      email,
-      phone,
-      password,
-    });
-    if (Object.keys(emptyFields).length > 0) {
-      return res
-        .status(400)
-        .json(
-          new APiResponse(400, "All fields are required", { missingItems })
-        );
-    }
-    let coverImageLocalPath;
-    const avatarLocalPath = req.files?.avatar[0]?.path;
-    if (
-      req.files &&
-      Array.isArray(req.files.coverImage) &&
-      req.files.coverImage.length > 0
-    ) {
-      coverImageLocalPath = req.files.coverImage[0].path;
-    } else {
-      return res
-        .status(400)
-        .json(
-          new APiResponse(
-            400,
-            { coverImage: "Cover Image file is required" },
-            null
-          )
-        );
-    }
-    const hashedPassword = await bcrypt.hash(password, 10);
-    if (avatarLocalPath === coverImageLocalPath) {
-      return res
-        .status(400)
-        .json(
-          new APiResponse(400, "Avatar and Cover Image cannot be the same")
-        );
-    }
-    const avatar = await uploadToCloudinary(avatarLocalPath);
-    const coverImage = await uploadToCloudinary(coverImageLocalPath);
-
-    const insertedUser = await executeQuery(insertUser, [
-      null,
-      first_name,
-      last_name,
-      username,
-      email,
-      phone,
-      hashedPassword,
-      null,
-      avatar.url,
-      coverImage.url,
-      new Date(),
-      new Date(),
-    ]);
-    const user_id = insertedUser.insertId;
-    req.id = user_id;
-
-    const userDetails = await executeQuery(getUserInfo, [user_id]);
+  const params = [username, email];
+  const s = await executeQuery(q, params);
+  if (s.length !== 0) {
     return res
-      .status(201)
+      .status(409)
       .json(
-        new APiResponse(201, "User registered successfully", userDetails[0])
+        new APiResponse(
+          409,
+          `User with username ${username} or email ${email} already exists`,
+          null
+        )
       );
-  } catch (error) {
-    if (error instanceof APiResponse) {
-      return res.status(500).json(error);
-    }
-    return res
-      .status(500)
-      .json(new APiResponse(500, "Internal Server Error!!!", error));
   }
+  if (!first_name) {
+    return res
+      .status(400)
+      .json(
+        new APiResponse(400, { first_name: "First name is required" }, null)
+      );
+  }
+  if (!last_name) {
+    return res
+      .status(400)
+      .json(new APiResponse(400, { last_name: "Last name is required" }, null));
+  }
+  if (!password) {
+    return res
+      .status(400)
+      .json(new APiResponse(400, { password: "Password is required" }, null));
+  }
+
+  if (!req.files?.avatar) {
+    return res
+      .status(400)
+      .json(new APiResponse(400, { avatar: "Avatar file is required" }, null));
+  }
+  if (!phone) {
+    return res
+      .status(400)
+      .json(new APiResponse(400, { phone: "Phone number is required" }, null));
+  }
+  let coverImageLocalPath;
+  const avatarLocalPath = req.files?.avatar[0]?.path;
+  if (
+    req.files &&
+    Array.isArray(req.files.coverImage) &&
+    req.files.coverImage.length > 0
+  ) {
+    coverImageLocalPath = req.files.coverImage[0].path;
+  } else {
+    return res
+      .status(400)
+      .json(
+        new APiResponse(
+          400,
+          { coverImage: "Cover Image file is required" },
+          null
+        )
+      );
+  }
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const avatar = await uploadToCloudinary(avatarLocalPath);
+  const coverImage = await uploadToCloudinary(coverImageLocalPath);
+
+  const insertedUser = await executeQuery(insertUser, [
+    null,
+    first_name,
+    last_name,
+    username,
+    email,
+    phone,
+    hashedPassword,
+    null,
+    avatar.url,
+    coverImage.url,
+    new Date(),
+    new Date(),
+  ]);
+  const user_id = insertedUser.insertId;
+  req.id = user_id;
+
+  const userDetails = await executeQuery(getUserInfo, [user_id]);
+  return res
+    .status(201)
+    .json(new APiResponse(201, "User registered successfully", userDetails[0]));
+  // } catch (error) {
+  if (error instanceof APiResponse) {
+    return res.status(500).json(error);
+  }
+  return res
+    .status(500)
+    .json(new APiResponse(500, "Internal Server Error!!!", error));
+  // }
 });
 
 export const loginUser = asyncHandler(async (req, res) => {
@@ -233,7 +229,8 @@ export const logOutUser = asyncHandler(async (req, res) => {
 
 export const getUser = asyncHandler(async (req, res) => {
   try {
-    const [user] = await executeQuery(getUserInfo, [req.id]);
+    const params = [req.body.user_id];
+    const [user] = await executeQuery(getUserInfo, params);
     if (!user) {
       return res.status(404).json(new APiResponse(404, "User not found", null));
     }

@@ -1,16 +1,36 @@
+"use client";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import Image from "next/image";
-import { Metadata } from "next";
+import dispatch from "../../utils/dispatch";
+import { login } from "@/store/slices/userSlice";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import Link from "next/link";
-
-export const metadata: Metadata = {
-  title: "Next.js Profile | TailAdmin - Next.js Dashboard Template",
-  description:
-    "This is Next.js Profile page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template",
-};
+import { useEffect } from "react";
+import axios from "axios";
+import { BASE_URL } from "@/constants/constants";
+import { useSelector } from "react-redux";
 
 const Profile = () => {
+  const user = useSelector((state: any) => state.user);
+  console.log(user);
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await axios.get(`${BASE_URL}/users/user-profile`, {
+        withCredentials: true,
+      });
+      if (res.data.status === 200) {
+        dispatch(login(res.data.data));
+      }
+      return res.data;
+    };
+    fetchData()
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
   return (
     <DefaultLayout>
       <div className="mx-auto max-w-242.5">
