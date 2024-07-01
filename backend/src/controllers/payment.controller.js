@@ -2,26 +2,6 @@ import { APiResponse } from "../utils/ApiResponse.js";
 import MissingFields from "../utils/MissingFields.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { executeQuery } from "../db/Query.js";
-// CREATE TABLE payments(
-//     payment_id BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT UNIQUE,
-//     order_id int NOT NULL,
-//     user_id BIGINT NOT NULL,
-//     currency VARCHAR(10) NOT NULL,
-//     amount DECIMAL(10, 2) NOT NULL,
-//     payment_option ENUM(
-//         'debit card',
-//         'credit card',
-//         'upi',
-//         'netbanking',
-//         'cod',
-//         'paylater'
-//     ) NOT NULL,
-//     status ENUM('pending', 'COMPLETED', 'failed', 'refunded') NOT NULL,
-//     created_at TIMESTAMP NOT NULL,
-//     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-//     FOREIGN KEY (order_id) REFERENCES orders(order_id),
-//     FOREIGN KEY (user_id) REFERENCES users(user_id)
-// );
 
 export const createPayment = asyncHandler(async (req, res) => {
   const { order_id, currency, amount, payment_option } = req.body;
