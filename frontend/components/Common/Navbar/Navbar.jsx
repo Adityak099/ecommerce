@@ -6,7 +6,6 @@ import { FaRegHeart } from "react-icons/fa";
 import { FaSearch } from "react-icons/fa";
 import { FaCartShopping } from "react-icons/fa6";
 
-// import { IoBagHandleOutline } from "react-icons/io5";
 import { CgProfile } from "react-icons/cg";
 
 import { menuItems } from "./data";
