@@ -189,6 +189,8 @@ export const loginUser = asyncHandler(async (req, res) => {
     const q = `UPDATE users SET refresh_token = ? , updated_at = ? WHERE user_id = ?;`;
     const p = [refresh_token, new Date(), userData.user_id];
     await executeQuery(q, p);
+    const getUserQuery = `SELECT username, email, first_name, last_name, phone, avatar, cover_image, created_at, updated_at FROM users WHERE user_id = ?;`;
+    const [user] = await executeQuery(getUserQuery, [userData.user_id]);
     return res
       .status(200)
       .cookie("refresh_token", refresh_token, {
@@ -201,6 +203,7 @@ export const loginUser = asyncHandler(async (req, res) => {
       })
       .json(
         new APiResponse(200, "User Logged In Successfully", {
+          ...user,
           access_token,
           refresh_token,
         })

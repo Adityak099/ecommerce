@@ -4,7 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { BASE_URL } from "../../../constants/constants";
 import axios from "axios";
-
+import { login } from "@/store/slice/userSlice";
+import dispatch from "@/store/dispatch";
 const SignIn = () => {
   const [userDetails, setUserDetails] = useState({
     username: "",
@@ -26,6 +27,7 @@ const SignIn = () => {
       },
     );
     if (response.status === 200) {
+      dispatch(login(response.data.data));
       window.location.href = "/";
     } else {
       alert("Invalid username or password");
