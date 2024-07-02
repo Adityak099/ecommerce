@@ -6,6 +6,9 @@ import "@/css/style.css";
 import React, { useEffect, useState } from "react";
 import Loader from "@/components/common/Loader";
 import { usePathname } from "next/navigation";
+import { Provider } from "react-redux";
+import { store, persistor } from "../store/store";
+import { PersistGate } from "redux-persist/integration/react";
 export default function RootLayout({ children, params }) {
   const [loading, setLoading] = useState(true);
   const pathname = usePathname();
@@ -30,7 +33,11 @@ export default function RootLayout({ children, params }) {
     <html lang="en">
       <body suppressHydrationWarning={true}>
         <div className="dark:bg-boxdark-2 dark:text-bodydark">
-          {loading ? <Loader /> : children}
+          <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+              {loading ? <Loader /> : children}
+            </PersistGate>
+          </Provider>
         </div>
       </body>
     </html>
