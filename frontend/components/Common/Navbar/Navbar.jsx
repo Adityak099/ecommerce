@@ -1,97 +1,72 @@
-"use client"; // Add this line to mark the file as a client component
+"use client";
 
 import React, { useState } from "react";
 import Link from "next/link";
 import { FaRegHeart } from "react-icons/fa";
 import { FaSearch } from "react-icons/fa";
 import { FaCartShopping } from "react-icons/fa6";
-
 import { CgProfile } from "react-icons/cg";
-
 import { menuItems } from "./data";
+import { useSelector } from "react-redux";
+import DropdownUser from "./DropdownUser";
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
-
+  const user = useSelector((state) => state.auth.user);
+  const username = user && `${user.first_name} ${user.last_name}`.toUpperCase();
   return (
     <>
-      <div className="bg-gray-500 h-[100vh]">
-        <nav className="flex justify-between items-center py-4 bg-green-200 shadow-md ">
+      <main className="bg-teal-200 sticky  top-0 left-0">
+        <header className="flex w-full h-20 justify-between lg:px-16">
+          <ul className="flex gap-x-5  items-center">
+            <li className="text-3xl pr-5">
+              <Link href="/">ApnaBazar</Link>
+            </li>
+            {menuItems.map((item, i) => {
+              return (
+                <li key={i}>
+                  <Link href={item.link}>{item.title}</Link>
+                </li>
+              );
+            })}
+          </ul>
           <div className="flex items-center">
-            <Link
-              href="/"
-              className="text-2xl font-bold text-black hover:text-gray-600 ml-6"
+            <input
+              type="search"
+              placeholder="Search for products, brand and more "
+              className="placeholder:italic block bg-white focus:outline-orange-500 w-[30vw] px-4 py-3  text-sm text-gray-800 rounded-l-xl "
+            />
+            <button
+              type="submit"
+              className="bg-orange-500 hover:bg-orange-700  text-white font-bold py-3.5 px-4 rounded-r-xl"
             >
-              Apna Bazar
-            </Link>
-            <ul className="flex items-center justify-end ml-20 gap-4">
-              {menuItems.map((item, i) => {
-                return (
-                  <li className="mr-6" key={i}>
-                    <Link
-                      href={item.link}
-                      className="text-black hover:text-gray-700"
-                    >
-                      {item.title}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
+              <FaSearch />
+            </button>
           </div>
-
-          <div className="w-[50vw] flex items-center justify-between">
-            <ul className="flex items-center justify-start">
-              <li className="mr-9 ">
-                <form className="flex items-center  ">
-                  <input
-                    type="search"
-                    placeholder="Search for products, brand and more "
-                    className="placeholder:italic block bg-white focus:outline-orange-500 w-[30vw] px-4 py-2  text-sm text-gray-800 rounded-l-xl "
-                  />
-                  <button
-                    type="submit"
-                    className="bg-orange-500 hover:bg-orange-700  text-white font-bold py-2 px-4 rounded-r-xl"
-                  >
-                    <FaSearch />
-                  </button>
-                </form>
-              </li>
-            </ul>
-            <ul>
-              <li className="mr-9 flex items-center justify-between gap-10 text-2xl ">
-                <CgProfile className="" />
-                <FaRegHeart />
-                <FaCartShopping />
-              </li>
-              <li></li>
-            </ul>
-          </div>
-        </nav>
-      </div>
+          <ul className="flex justify-center items-center gap-x-5">
+            <li className="">
+              {user ? (
+                <DropdownUser user={user} />
+              ) : (
+                <Link href="/auth/login">
+                  <CgProfile className="text-3xl" />
+                </Link>
+              )}
+            </li>
+            <li>
+              <FaRegHeart className="text-3xl cursor-pointer" />
+            </li>
+            <li>
+              <FaCartShopping className="text-3xl cursor-pointer" />
+            </li>
+          </ul>
+        </header>
+      </main>
     </>
   );
 }
 
 export default Navbar;
-
-{
-  /* <li className="mr-4">
-              <Link href="#" className="text-gray-600 hover:text-gray-900">
-                <i className="fas fa-search"></i>
-              </Link>
-            </li>
-            <li className="mr-4">
-              <Link href="#" className="text-gray-600 hover:text-gray-900">
-                <i className="fas fa-heart"></i>
-              </Link>
-            </li>
-            <li>
-              <Link href="#" className="text-gray-600 hover:text-gray-900">
-                <i className="fas fa-shopping-cart"></i>
-              </Link>
-            </li> */
-}
