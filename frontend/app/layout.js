@@ -1,7 +1,6 @@
 "use client";
 import { Inter } from "next/font/google";
 import "./globals.css";
-// import Navbar from "@/components/Common/Navbar";
 import { Provider } from "react-redux";
 import { store, persistor } from "../store/store";
 import { PersistGate } from "redux-persist/integration/react";

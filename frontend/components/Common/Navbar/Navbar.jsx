@@ -19,7 +19,7 @@ function Navbar() {
   const username = user && `${user.first_name} ${user.last_name}`.toUpperCase();
   return (
     <>
-      <main className="bg-teal-200 sticky  top-0 left-0">
+      <main className="bg-teal-200 mx-auto max-w-7x">
         <header className="flex w-full h-20 justify-between lg:px-16">
           <ul className="flex gap-x-5  items-center">
             <li className="text-3xl pr-5">
@@ -52,15 +52,15 @@ function Navbar() {
                 <DropdownUser user={user} />
               ) : (
                 <Link href="/auth/login">
-                  <CgProfile className="text-3xl" />
+                  <CgProfile className="text-2xl" />
                 </Link>
               )}
             </li>
             <li>
-              <FaRegHeart className="text-3xl cursor-pointer" />
+              <FaRegHeart className="text-2xl cursor-pointer" />
             </li>
             <li>
-              <FaCartShopping className="text-3xl cursor-pointer" />
+              <FaCartShopping className="text-2xl cursor-pointer" />
             </li>
           </ul>
         </header>
