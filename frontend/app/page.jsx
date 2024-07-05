@@ -1,8 +1,13 @@
 import Navbar from "@/components/Common/Navbar/Navbar";
-export default function Home() {
+import React from "react";
+
+function page() {
   return (
-    <main>
+    <>
       <Navbar />
-    </main>
+      <h1>Homepage</h1>
+    </>
   );
 }
+
+export default page;
