@@ -8,6 +8,7 @@ import { BsCart2 } from "react-icons/bs";
 import BASE_URL from "../../constants/constants";
 import { setProducts as setStoreProducts } from "../../store/slice/productsSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "store/slice/cartSlice";
 
 function Content({ className }) {
   const dispatch = useDispatch();
@@ -16,8 +17,13 @@ function Content({ className }) {
 
   const isProductsStored = useSelector((state) => state.products.products);
   const isExistingProducts = isProductsStored && isProductsStored.length > 0;
-
+  const cart = useSelector((state) => state.cart.cart);
+  const addItemToCart = (item) => {
+    dispatch(addToCart(item));
+  };
+  console.log("cart", cart);
   useEffect(() => {
+    console.log("res", products);
     const fetchProducts = async () => {
       try {
         const res = await axios.get(`${BASE_URL}/product/get-all-product`, {
@@ -35,6 +41,9 @@ function Content({ className }) {
 
     if (!isExistingProducts && !isFetched) {
       fetchProducts();
+    } else {
+      setProducts(isProductsStored);
+      setIsFetched(true);
     }
   }, [isExistingProducts, isFetched]);
 
@@ -74,8 +83,11 @@ function Content({ className }) {
             </div>
             <div className="col-span-3 text-sm flex flex-col gap-y-3 justify-center items-center">
               <p>Price: ₹ {product.price}</p>
-              <p>Category: {product.category}</p>
-              <button className="bg-orange-600 w-1/2 py-2 flex justify-center items-center gap-x-2 text-white focus:outline-none active:scale-95 transition-transform duration-150">
+              <p>Category: {product.category_name}</p>
+              <button
+                onClick={() => addItemToCart(product)}
+                className="bg-orange-600 w-1/2 py-2 flex justify-center items-center gap-x-2 text-white focus:outline-none active:scale-95 transition-transform duration-150"
+              >
                 Add to Cart <BsCart2 color="white" fontSize="large" />
               </button>
               <button className="bg-orange-600 w-1/2 py-2 flex justify-center items-center gap-x-2 text-white focus:outline-none active:scale-95 transition-transform duration-150">

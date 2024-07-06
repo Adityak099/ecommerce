@@ -137,8 +137,27 @@ export const getProductsByCategoryId = asyncHandler(async (req, res) => {
 //code for getting all products
 export const getAllProducts = asyncHandler(async (req, res) => {
   try {
-    const products = `SELECT * FROM product`;
-    const result = await executeQuery(products);
+    const q = `
+    SELECT 
+      product.product_id,
+      product.name,
+      product.category_id,
+      category.category_name,
+      product.stock,
+      product.description,
+      product.price,
+      product.image,
+      product.created_at,
+      product.updated_at
+    FROM 
+      product
+    JOIN
+      category
+    ON
+      product.category_id = category.category_id;
+  `;
+
+    const result = await executeQuery(q);
     return res
       .status(200)
       .json(new APiResponse(200, "Products fetched successfully", result));

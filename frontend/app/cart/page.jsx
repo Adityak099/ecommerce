@@ -5,7 +5,7 @@ import Navbar from "@components/Common/Navbar/Navbar";
 function page() {
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
       <Cart />
     </>
   );
