@@ -11,10 +11,9 @@ import {
 } from "../controllers/product.controller.js";
 
 const router = Router();
-router.use(verifyJwt);
 
 // Create a new product✅
-router.route("/new-product").post(
+router.route("/new-product").post(verifyJwt,
   upload.fields([
     {
       name: "image",
@@ -34,7 +33,7 @@ router.route("/get-product-by-category-id").get(getProductsByCategoryId);
 router.route("/get-all-product").get(getAllProducts);
 
 // Update a product✅
-router.route("/update-product").patch(
+router.route("/update-product").patch(verifyJwt,
   upload.fields([
     {
       name: "image",
@@ -45,6 +44,6 @@ router.route("/update-product").patch(
 );
 
 // Delete a product
-router.route("/delete-product").delete(deleteProduct);
+router.route("/delete-product").delete(verifyJwt,deleteProduct);
 
 export default router;

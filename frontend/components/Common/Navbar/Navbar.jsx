@@ -19,7 +19,7 @@ function Navbar() {
   const username = user && `${user.first_name} ${user.last_name}`.toUpperCase();
   return (
     <>
-      <main className="bg-teal-200 mx-auto max-w-7x">
+      <main className="header mx-auto max-w-7x" id="">
         <header className="flex w-full h-20 justify-between lg:px-16">
           <ul className="flex gap-x-5  items-center">
             <li className="text-3xl pr-5">
@@ -37,7 +37,7 @@ function Navbar() {
             <input
               type="search"
               placeholder="Search for products, brand and more "
-              className="placeholder:italic block bg-white focus:outline-orange-500 w-[30vw] px-4 py-3  text-sm text-gray-800 rounded-l-xl "
+              className="placeholder:italic block bg-white outline outline-2 outline-orange-500 w-[18vw] px-4 py-3  text-sm text-gray-800 rounded-l-xl "
             />
             <button
               type="submit"
@@ -60,7 +60,9 @@ function Navbar() {
               <FaRegHeart className="text-2xl cursor-pointer" />
             </li>
             <li>
-              <FaCartShopping className="text-2xl cursor-pointer" />
+              <Link href="/cart">
+                <FaCartShopping className="text-2xl cursor-pointer" />
+              </Link>
             </li>
           </ul>
         </header>

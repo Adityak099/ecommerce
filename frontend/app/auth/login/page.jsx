@@ -18,7 +18,9 @@ const LoginPage = () => {
       return;
     }
     try {
-      const resposne = await axios.post(`${BASE_URL}/users/login`, user);
+      const resposne = await axios.post(`${BASE_URL}/users/login`, user, {
+        withCredentials: true,
+      });
       console.log(resposne.data.data);
       if (resposne.data.status === 200) {
         dispatch(login(resposne.data.data));
