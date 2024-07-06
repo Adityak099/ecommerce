@@ -9,7 +9,6 @@ const DropdownUser = ({ user }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const handlleLogout = () => {
     dispatch(logout());
-    dispatch();
   };
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
