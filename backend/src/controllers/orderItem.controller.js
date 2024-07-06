@@ -124,15 +124,17 @@ export const deleteOrderItem = asyncHandler(async (req, res) => {
 
     const q = `DELETE FROM order_item WHERE item_id =?;`;
     const result = await executeQuery(q, [item_id]);
-     if (result.affectedRows === 0) {
-    return res.status(404).json(new APiResponse(404, "Review does not exist"));
-  }
+    if (result.affectedRows === 0) {
+      return res
+        .status(404)
+        .json(new APiResponse(404, "Review does not exist"));
+    }
 
-  if (result.affectedRows !== 1) {
-    return res
-      .status(500)
-      .json(new APiResponse(500, "Failed to delete review"));
-  }
+    if (result.affectedRows !== 1) {
+      return res
+        .status(500)
+        .json(new APiResponse(500, "Failed to delete review"));
+    }
 
     return res
       .status(200)
@@ -147,7 +149,30 @@ export const deleteOrderItem = asyncHandler(async (req, res) => {
 // Get All Order Items: Get all order items.
 export const getAllOrderItems = asyncHandler(async (req, res) => {
   try {
-    const q = `SELECT * FROM order_item;`;
+    const q = `
+    SELECT 
+      order_item.item_id,
+      order_item.quantity,
+      product.name,
+      product.category_id,
+      category.category_name AS category_name,
+      product.stock,
+      product.description,
+      product.price,
+      product.image
+    FROM 
+      order_item
+    JOIN 
+      product 
+    ON 
+      order_item.product_id = product.product_id
+    JOIN
+      category
+    ON
+      product.category_id = category.category_id;
+  `;
+
+
     const items = await executeQuery(q);
 
     return res

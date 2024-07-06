@@ -1,8 +1,8 @@
 "use client";
-import BASE_URL from "@/constants/constants";
-import dispatch from "@/store/dispatch";
-import { login } from "@/store/slice/userSlice";
 import axios from "axios";
+import BASE_URL from "../../../constants/constants";
+import dispatch from "../../../store/dispatch";
+import { login } from "../../../store/slice/userSlice";
 import { useState } from "react";
 const LoginPage = () => {
   const [user, setUser] = useState({ username: "", password: "" });

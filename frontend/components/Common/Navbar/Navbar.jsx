@@ -16,11 +16,12 @@ function Navbar() {
     setIsOpen(!isOpen);
   };
   const user = useSelector((state) => state.auth.user);
-  const username = user && `${user.first_name} ${user.last_name}`.toUpperCase();
+  const cart = useSelector((state) => state.cart.cart);
+
   return (
     <>
       <main className="header mx-auto max-w-7x" id="">
-        <header className="flex w-full h-20 justify-between lg:px-16">
+        <header className="flex w-full h-20 justify-between lg:px-14">
           <ul className="flex gap-x-5  items-center">
             <li className="text-3xl pr-5">
               <Link href="/">ApnaBazar</Link>
@@ -60,8 +61,13 @@ function Navbar() {
               <FaRegHeart className="text-2xl cursor-pointer" />
             </li>
             <li>
-              <Link href="/cart">
-                <FaCartShopping className="text-2xl cursor-pointer" />
+              <Link href="/cart" className="flex">
+                <FaCartShopping className="text-2xl cursor-pointer z-10" />
+                {cart.length > 0 && user !== null ? (
+                  <span className="absolute top-3 right-[3.45rem] bg-[#f97316] rounded-full h-5 flex justify-center items-center w-5 text-sm">
+                    {cart.length}
+                  </span>
+                ) : null}
               </Link>
             </li>
           </ul>
