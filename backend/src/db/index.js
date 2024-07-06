@@ -1,10 +1,10 @@
 import mysql from "mysql2/promise";
 
 const config = {
-  host: "ls-54bd0f330f4c2a47b264f2509f70bdd76d45264e.c3oyo6c0m2jn.ap-south-1.rds.amazonaws.com",
-  user: "abhishek",
-  password: "Abhishek$62040",
-  database: "dbecommerce",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 };
 let connection;
 

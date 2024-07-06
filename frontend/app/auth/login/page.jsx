@@ -1,8 +1,8 @@
 "use client";
-import BASE_URL from "@/constants/constants";
-import dispatch from "@/store/dispatch";
-import { login } from "@/store/slice/userSlice";
 import axios from "axios";
+import BASE_URL from "../../../constants/constants";
+import dispatch from "../../../store/dispatch";
+import { login } from "../../../store/slice/userSlice";
 import { useState } from "react";
 const LoginPage = () => {
   const [user, setUser] = useState({ username: "", password: "" });
@@ -18,7 +18,9 @@ const LoginPage = () => {
       return;
     }
     try {
-      const resposne = await axios.post(`${BASE_URL}/users/login`, user);
+      const resposne = await axios.post(`${BASE_URL}/users/login`, user, {
+        withCredentials: true,
+      });
       console.log(resposne.data.data);
       if (resposne.data.status === 200) {
         dispatch(login(resposne.data.data));

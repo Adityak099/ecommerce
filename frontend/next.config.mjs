@@ -4,6 +4,8 @@ const nextConfig = {
   images: {
     domains: ["fakestoreapi.com", "res.cloudinary.com"],
   },
+  optimizeFonts: true,
+  trailingSlash: true,
 };
 
 export default nextConfig;

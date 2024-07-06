@@ -5,16 +5,48 @@ import Image from "next/image";
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import { FaStar } from "react-icons/fa6";
 import { BsCart2 } from "react-icons/bs";
+import BASE_URL from "../../constants/constants";
+import { setProducts as setStoreProducts } from "../../store/slice/productsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "store/slice/cartSlice";
+
 function Content({ className }) {
+  const dispatch = useDispatch();
   const [products, setProducts] = useState([]);
-  const getProducts = async () => {
-    const response = await axios.get("https://fakestoreapi.com/products");
-    setProducts(response.data);
+  const [isFetched, setIsFetched] = useState(false);
+
+  const isProductsStored = useSelector((state) => state.products.products);
+  const isExistingProducts = isProductsStored && isProductsStored.length > 0;
+  const cart = useSelector((state) => state.cart.cart);
+  const addItemToCart = (item) => {
+    dispatch(addToCart(item));
   };
-  console.log(products);
+  console.log("cart", cart);
   useEffect(() => {
-    getProducts();
-  }, []);
+    console.log("res", products);
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/product/get-all-product`, {
+          withCredentials: true,
+        });
+        if (res.status === 200) {
+          setProducts(res.data.data);
+          dispatch(setStoreProducts(res.data.data));
+          setIsFetched(true);
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    if (!isExistingProducts && !isFetched) {
+      fetchProducts();
+    } else {
+      setProducts(isProductsStored);
+      setIsFetched(true);
+    }
+  }, [isExistingProducts, isFetched]);
+
   return (
     <section className={className + " lg:px-5"}>
       <Breadcrumb pageName={"products"} />
@@ -29,32 +61,33 @@ function Content({ className }) {
         <li className="cursor-pointer">Newest First</li>
       </ul>
 
-      {/* Products */}
       <div className="my-8 flex flex-col gap-y-5">
         {products.map((product) => (
           <div
-            className="grid grid-cols-10 border-t boder-b border-stroke p-4"
-            key={product.id}
+            className="grid grid-cols-10 gap-x-4 border-t border-b border-stroke p-4"
+            key={product.product_id}
           >
             <Image
-              className="col-span-2 aspect-square h-auto"
+              className="col-span-2 aspect-[4/3] object-center object-cover h-full w-full"
               src={product.image}
               width={200}
               height={80}
-              alt={product.title}
+              alt={product.name}
             />
-            <div className="col-span-5 text-sm flex flex-col ">
-              <p>{product.title}</p>
+            <div className="col-span-5 text-sm flex flex-col">
+              <p>{product.name}</p>
               <p className="flex gap-x-2 justify-start items-center pt-2">
-                {product.rating.rate}
-                <FaStar color="green" /> From {product.rating.count} reviews
+                <FaStar color="green" /> From {product.reviews} reviews
               </p>
               <p className="text-xs pt-2">{product.description}</p>
             </div>
             <div className="col-span-3 text-sm flex flex-col gap-y-3 justify-center items-center">
-              <p>Price: Search for: ₹ {product.price}</p>
-              <p>Category: {product.category}</p>
-              <button className="bg-orange-600 w-1/2 py-2 flex justify-center items-center gap-x-2 text-white focus:outline-none active:scale-95 transition-transform duration-150">
+              <p>Price: ₹ {product.price}</p>
+              <p>Category: {product.category_name}</p>
+              <button
+                onClick={() => addItemToCart(product)}
+                className="bg-orange-600 w-1/2 py-2 flex justify-center items-center gap-x-2 text-white focus:outline-none active:scale-95 transition-transform duration-150"
+              >
                 Add to Cart <BsCart2 color="white" fontSize="large" />
               </button>
               <button className="bg-orange-600 w-1/2 py-2 flex justify-center items-center gap-x-2 text-white focus:outline-none active:scale-95 transition-transform duration-150">

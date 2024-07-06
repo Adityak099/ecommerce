@@ -7,10 +7,6 @@ export const menuItems = [
     link: "/shop",
     title: "Shop",
   },
-//   {
-//     link: "/blog",
-//     title: "Blog",
-//   },
   {
     link: "/contact-us",
     title: "Contact Us",
@@ -18,5 +14,9 @@ export const menuItems = [
   {
     link: "/about-us",
     title: "About Us",
+  },
+  {
+    link: "/products",
+    title: "Products",
   },
 ];

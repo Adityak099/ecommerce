@@ -1,14 +1,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import ClickOutside from "@/components/ClickOutside";
-import dispatch from "@/store/dispatch";
-import { logout } from "@/store/slice/userSlice";
+import ClickOutside from "../../../components/ClickOutside";
+import dispatch from "../../../store/dispatch";
+import { logout } from "../../../store/slice/userSlice";
 // import { cookies } from "next/headers";
 const DropdownUser = ({ user }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const handlleLogout = () => {
     dispatch(logout());
+    dispatch();
   };
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
