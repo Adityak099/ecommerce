@@ -1,6 +1,5 @@
-import DefaultLayout from "@/components/Layout/DefaultLayout";
-import Content from "@/components/content/Content";
-import React from "react";
+import DefaultLayout from "../../components/Layout/DefaultLayout";
+import Content from "../../components/content/Content";
 
 function page() {
   return (
@@ -9,5 +8,4 @@ function page() {
     </DefaultLayout>
   );
 }
-
 export default page;
