@@ -10,7 +10,7 @@ const options = {
   httpOnly: true,
   secure: false,
   sameSite: "Lax",
-  domain:'localhost'
+  domain:'localhost:3000'
 };
 const generateAccessToken = (id) => {
   return jwt.sign({ id }, process.env.ACCESS_TOKEN_SECRET, {
