@@ -22,7 +22,6 @@ import inventoryRouter from "./routes/inventory.routes.js";
 import reviewRouter from "./routes/reviews.routes.js";
 import discountsRouter from "./routes/discounts.routes.js";
 
-
 import paymentRouter from "./routes/payment.routes.js";
 
 //routes declaration
@@ -35,7 +34,9 @@ app.use("/api/v1/order", orderRouter);
 app.use("/api/v1/order/items", orderItemRouter);
 app.use("/api/v1/inventory", inventoryRouter);
 app.use("/api/v1/review", reviewRouter);
-
+app.get("/", (req, res) => {
+  res.send("You are sending a get request to the root route");
+});
 app.use("/api/v1/discounts", discountsRouter);
 
 app.use("/api/v1/payment", paymentRouter);
