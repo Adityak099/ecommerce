@@ -1,2 +1,2 @@
-const BASE_URL = "https://ecommerce-iota-bice.vercel.app/api/v1";
+const BASE_URL = process.env.BASE_URL;
 export default BASE_URL;
