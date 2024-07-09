@@ -9,8 +9,6 @@ import { getUserInfo, insertUser } from "../models/queries.model.js";
 const options = {
   httpOnly: true,
   secure: false,
-  sameSite: "Lax",
-  domain: "localhost",
 };
 const generateAccessToken = (id) => {
   return jwt.sign({ id }, process.env.ACCESS_TOKEN_SECRET, {
