@@ -41,4 +41,4 @@ app.use("/api/v1/discounts", discountsRouter);
 
 app.use("/api/v1/payment", paymentRouter);
 
-export { app };
+export default app ;
