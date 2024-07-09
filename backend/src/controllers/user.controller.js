@@ -9,6 +9,7 @@ import { getUserInfo, insertUser } from "../models/queries.model.js";
 const options = {
   httpOnly: false,
   secure: true,
+  domain: "localhost:3000",
   sameSite: "None",
 };
 const generateAccessToken = (id) => {
