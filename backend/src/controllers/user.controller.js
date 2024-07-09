@@ -7,10 +7,8 @@ import bcrypt from "bcrypt";
 import { executeQuery } from "../../src/db/Query.js";
 import { getUserInfo, insertUser } from "../models/queries.model.js";
 const options = {
-  httpOnly: false,
+  httpOnly: true,
   secure: true,
-  domain: "localhost:3000",
-  sameSite: "None",
 };
 const generateAccessToken = (id) => {
   return jwt.sign({ id }, process.env.ACCESS_TOKEN_SECRET, {
