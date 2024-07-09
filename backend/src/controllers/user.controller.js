@@ -367,19 +367,20 @@ export const refreshToken = asyncHandler(async (req, res) => {
 });
 
 export const verifyUser = asyncHandler(async (req, res) => {
-  const authorizationHeader = req.headers.authorization;
-
-  if (!authorizationHeader) {
-    return res.status(401).json(new APiResponse(401, "Unauthorized Access"));
+  let user_token;
+  const { access_token } = req.cookies;
+  if (access_token) {
+    user_token = access_token;
+  } else {
+    user_token = req.headers.authorization.split(" ")[1];
   }
 
-  const token = authorizationHeader.split(" ")[1];
-  if (!token) {
+  if (!user_token) {
     return res.status(401).json(new APiResponse(401, "No access token found"));
   }
 
   try {
-    const verifyToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    const verifyToken = jwt.verify(user_token, process.env.ACCESS_TOKEN_SECRET);
     const q = `SELECT user_id FROM users WHERE user_id = ?;`;
 
     const result = await executeQuery(q, [verifyToken.id]);
