@@ -372,7 +372,8 @@ export const verifyUser = asyncHandler(async (req, res) => {
   if (access_token) {
     user_token = access_token;
   } else {
-    user_token = req.headers.authorization.split(" ")[1];
+    user_token = req.headers.authorization;
+    user_token = user_token.split(" ")[1];
   }
 
   if (!user_token) {
