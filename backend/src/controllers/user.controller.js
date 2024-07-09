@@ -369,11 +369,11 @@ export const refreshToken = asyncHandler(async (req, res) => {
 export const verifyUser = asyncHandler(async (req, res) => {
   let user_token;
   const { access_token } = req.cookies;
+
   if (access_token) {
     user_token = access_token;
-  } else {
-    user_token = req.headers.authorization;
-    user_token = user_token.split(" ")[1];
+  } else if (req.headers.authorization) {
+    user_token = req.headers.authorization.split(" ")[1];
   }
 
   if (!user_token) {
@@ -399,3 +399,4 @@ export const verifyUser = asyncHandler(async (req, res) => {
     return res.status(500).json(new APiResponse(500, "Internal Server Error"));
   }
 });
+
