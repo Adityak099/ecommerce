@@ -324,45 +324,56 @@ export const deleteUser = asyncHandler(async (req, res) => {
 });
 
 export const refreshToken = asyncHandler(async (req, res) => {
+  let refresh_token;
+
+  if (req.cookies && req.cookies.refresh_token) {
+    refresh_token = req.cookies.refresh_token;
+  } else if (req.body.refresh_token) {
+    refresh_token = req.body.refresh_token;
+  }
+
+  if (!refresh_token) {
+    return res.status(401).json(new APiResponse(401, "Refresh Token Required"));
+  }
+
   try {
-    const { refresh_token } = req.cookies || req.body;
-    if (!refresh_token) {
-      return res
-        .status(401)
-        .json(new APiResponse(401, "Refresh Token Required"));
-    }
     const verifyToken = jwt.verify(
       refresh_token,
       process.env.REFRESH_TOKEN_SECRET
     );
+
     if (!verifyToken) {
       return res
         .status(401)
         .json(new APiResponse(401, "Invalid Refresh Token"));
     }
+
     const q = `SELECT user_id FROM users WHERE refresh_token = ?;`;
     const result = await executeQuery(q, [refresh_token]);
+
     if (result.length === 0) {
       return res
         .status(401)
         .json(new APiResponse(401, "Invalid Refresh Token"));
     }
+
     const access_token = generateAccessToken(verifyToken.id);
-    return res
-      .status(200)
-      .cookie("access_token", access_token, {
-        ...options,
-        maxAge: 24 * 60 * 60 * 1000,
+
+    res.cookie("access_token", access_token, {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+    });
+
+    return res.status(200).json(
+      new APiResponse(200, "Token Refreshed Successfully", {
+        access_token,
       })
-      .json(
-        new APiResponse(200, "Token Refreshed Successfully", {
-          access_token,
-        })
-      );
+    );
   } catch (error) {
-    return res
-      .status(500)
-      .json(new APiResponse(500, "Internal Server Error", error));
+    console.error("Error refreshing token:", error);
+    return res.status(500).json(new APiResponse(500, "Internal Server Error"));
   }
 });
 
@@ -399,4 +410,3 @@ export const verifyUser = asyncHandler(async (req, res) => {
     return res.status(500).json(new APiResponse(500, "Internal Server Error"));
   }
 });
-
