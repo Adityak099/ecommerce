@@ -1,2 +1,2 @@
-const BASE_URL = "http://localhost:8000/api/v1";
+const BASE_URL = process.env.BASE_URL;
 export default BASE_URL;
