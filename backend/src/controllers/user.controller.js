@@ -7,8 +7,8 @@ import bcrypt from "bcrypt";
 import { executeQuery } from "../../src/db/Query.js";
 import { getUserInfo, insertUser } from "../models/queries.model.js";
 const options = {
-  httpOnly: true,
-  secure: false,
+  httpOnly: false,
+  secure: true,
   sameSite: "None",
 };
 const generateAccessToken = (id) => {
