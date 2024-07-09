@@ -1,6 +1,6 @@
 export const menuItems = [
   {
-    link: "/home",
+    link: "/",
     title: "Home",
   },
   {
