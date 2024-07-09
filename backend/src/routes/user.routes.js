@@ -23,7 +23,7 @@ router.route("/user-info").get(verifyJwt, getUser);
 router.route("/login").post(loginUser);
 router.route("/logout").post(verifyJwt, logOutUser);
 router.route("/delete-user").post(verifyJwt, logOutUser);
-router.route("/refresh-access-token").post(verifyJwt, refreshToken);
+router.route("/refresh-access-token").post(refreshToken);
 router.route("/verify-access-token").post(verifyUser);
 router.route("/update-user-details").post(verifyJwt, updateUserDetails);
 
