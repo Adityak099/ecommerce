@@ -9,7 +9,7 @@ import {
 import { FaPlus } from "react-icons/fa";
 import { FaMinus } from "react-icons/fa";
 import { useDispatch } from "react-redux";
-function Item({ cart }) {
+function Item({ cart, calculateTotal }) {
   const dispatch = useDispatch();
   return (
     <>
@@ -22,10 +22,10 @@ function Item({ cart }) {
             <div className="col-span-4 py-3  px-3 w-full">
               <Image
                 src={item.image}
-                width={100}
-                height={100}
+                width={300}
+                height={218}
                 alt="Item Image"
-                className="object-cover object-center  w-full h-auto aspect-[4/3]"
+                className="object-cover object-center  w-full h-auto aspect-[4/3] max-h-[300px]"
               />
             </div>
             <div className="relative col-span-7 outline outline-1 outline-[#e0e0e0] py-5 lg:pl-5 px-3 flex flex-col gap-y-1">
@@ -38,6 +38,7 @@ function Item({ cart }) {
                   className="shadow-xl shadow-gray-300 rounded-md p-1"
                   onClick={() => {
                     dispatch(decrementQuantity(item.product_id));
+                    calculateTotal();
                   }}
                 >
                   <FaMinus />
@@ -48,6 +49,7 @@ function Item({ cart }) {
                   className="shadow-xl shadow-gray-300 rounded-md p-1"
                   onClick={() => {
                     dispatch(incrementQuantity(item.product_id));
+                    calculateTotal();
                   }}
                 >
                   <FaPlus />
